@@ -1,0 +1,33 @@
+/**
+ * Rules for a simple <virtual> currency tradebot.
+ * 
+ * (c) 2012 Andreas Rueckert <a_rueckert@gmx.net>
+ */
+
+package de.andreas_rueckert.tradebot;
+
+import de.andreas_rueckert.account.AccountManager
+
+globals
+
+functions
+
+queries
+
+rules
+
+// The following rule just exchanges currencies.
+rule "exchange currency"
+    minimum 1  // Alway keep some money on an account.
+when
+    $accountManager : AccountManager()
+    $chartProvider : ChartProvider()
+    $feeCalculator : FeeCalculator()
+    $orderBook : OrderBook()
+    $account1 : Account( balance > minimum ) from $accountManager.allAccounts
+    $account2 :Account( currency != $account1.currency) from $accountManager.allAccounts
+    $changeAmount : $account1.balance - minimum
+    && $changeAmount * $chartProvider.getExchangeRate( $account1.currency, $account2.currency) > $feeCalculator.calculateFee( $account1.currency, $account2.currency, $changeAmount)
+then
+    $orderBook.add( $account1, $account2, $changeAmount)
+end

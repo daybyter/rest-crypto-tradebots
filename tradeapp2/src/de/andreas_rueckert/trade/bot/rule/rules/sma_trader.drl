@@ -1,0 +1,13 @@
+package TradeRuleSet1
+
+global de.andreas_rueckert.chart.ChartProvider ChartProvider
+global de.andreas_rueckert.fee.FeeCalculator FeeCalculator
+global de.andreas_rueckert.trade.order.OrderBook OrderBook
+
+rule "Compare btc-e sma"
+     when
+	eval( ( AccountManager.getBalance( "BTCe", "btc<=>usd") > new Price( "1.0"))
+	      && ChartProvider.getTicker( "BTCe", "btc<=>usd").getBuy() > ChartProvider.getSMA( "BTCe", "btc<=>usd", 6L*60L*60L*1000000L).multiply( new Price( "1.1")))
+     then
+         System.out.println( "Sell btc?");
+end

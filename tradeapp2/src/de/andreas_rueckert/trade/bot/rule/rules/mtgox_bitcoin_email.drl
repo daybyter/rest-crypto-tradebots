@@ -1,0 +1,14 @@
+package MtGoxBitcoinRuleSet1
+
+global de.andreas_rueckert.chart.ChartProvider ChartProvider
+global de.andreas_rueckert.fee.FeeCalculator FeeCalculator
+global de.andreas_rueckert.trade.order.OrderBook OrderBook
+global de.andreas_rueckert.notification.EmailNotifier EmailNotifier
+global de.andreas_rueckert.trade.bot.ExecutionCounter ExecutionCounter
+
+rule "Bitcoins at MtGox are over 6.20"
+    when
+        eval( ChartProvider.getSells().get("MtGox") > (6.2 * 100000))
+    then
+	EmailNotifier.sendMail( "mail@andreas-rueckert.de", "MtGox BTC rate", "BTC rate is over USD 6.20 .");
+end  

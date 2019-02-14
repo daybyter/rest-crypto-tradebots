@@ -1,0 +1,10 @@
+package $ruleSetName
+
+#foreach( $varName in $allGlobalVars.keySet() )
+global $allGlobalVars.get($varName) $varName
+#end
+
+#foreach( $rule in $allRules )
+$rule
+
+#end

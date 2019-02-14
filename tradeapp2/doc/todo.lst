@@ -1,0 +1,31 @@
+ToDo-List
+=========
+
+App:
+----
+
+- create .tradeapp directory automagically, if it does not exist, when the settings are written.
+- complete ssh server with all required commands and test the server.
+- complete JDBC trade logging 
+- complete trade cache in ChartProvider.
+- use Akima interpolation in the trade window.
+
+
+Bots:
+-----
+
+- Integrate OrderDialog completely in btc-e native bot.
+- Make RuleBot usable.
+- Run getAccounts via Account-Manager to avoid IP bans, if 2 bots query their funds in a very short timespan.
+
+
+Framework:
+----------
+
+- rename btc-e package due to a naming conflict in eclipse?
+- complete zapto client?
+- rename TradeSite to TradeSiteClient and TradeSiteImpl to TradeSiteClientCore ?
+- implement the TradeSite implementation as separate jars, so the trade site 'drivers' could be loaded as modules?
+- write a module loader for the trade site interfaces.
+- refactor the TradeOrder/DepositOrder/WithdrawOrder structure, because deposit and withdraw subclass trade order now,
+  but don't need a currency pair etc.

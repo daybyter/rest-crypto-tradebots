@@ -1,0 +1,17 @@
+20 [main] INFO de.andreas_rueckert.trade.app.TradeApp  - Starting in daemon mode (no GUI)
+722 [main] INFO de.andreas_rueckert.trade.app.TradeApp  - Starting trade bot: Spread
+I/O error while reading from URL: https://btc-e.com/api/2/ltc_usd/depth
+java.io.IOException: Server returned HTTP response code: 504 for URL: https://btc-e.com/api/2/ltc_usd/depth
+DEBUG: Server error: <html>
+<head><title>504 Gateway Time-out</title></head>
+<body bgcolor="white">
+<center><h1>504 Gateway Time-out</h1></center>
+<hr><center>cloudflare-nginx</center>
+</body>
+</html>
+Exception in thread "Thread-0" de.andreas_rueckert.trade.TradeDataNotAvailableException: Some trade data are not available: btc-e server did not respond to depth request
+        at de.andreas_rueckert.trade.site.btc_e.client.BtcEClient.getDepth(Unknown Source)
+        at de.andreas_rueckert.trade.chart.ChartProvider.getDepth(Unknown Source)
+        at de.andreas_rueckert.trade.bot.spread.SpreadBot$BuyRule.isConditionFilled(Unknown Source)
+        at de.andreas_rueckert.trade.bot.spread.SpreadBot$1.run(Unknown Source)
+nohup.out (END) Write failed: Broken pipe

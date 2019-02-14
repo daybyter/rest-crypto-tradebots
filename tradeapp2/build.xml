@@ -1,0 +1,146 @@
+<project name="Cryptocoin trade application" default="dist" basedir=".">
+    <description>
+        Java tradeapp build file
+    </description>
+  <!-- set global properties for this build -->
+
+  <property name="version" value="0.2.0"/>
+
+  <property name="src" location="src"/>
+  <property name="lib" location="lib/"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="rules" location="src/de/andreas_rueckert/trade/bot/rule/rules/"/>
+  <property name="strategies.java" location="de/andreas_rueckert/trade/bot/spread/strategies/java/**"/>
+  <property name="scripts" location="scripts/"/>
+  <property name="cryptocoin-tradelib" location="../cryptocoin-tradelib/core/dist/lib/"/>
+  <property name="cryptocoin-tradelib-ui-j2ee" location="../cryptocoin-tradelib/ui_j2ee/dist/lib/"/>
+  <property name="cryptocoin-tradelib-custom" location="../cryptocoin-tradelib-custom/core/dist/lib/"/>
+  <property name="botlib" location="../botlib/dist/lib/"/>
+
+  <target name="init">
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+
+    <!-- Copy the data files to the build dir, so they are included in the jar later. -->
+     <copy todir="${build}">
+       <fileset dir="${src}">
+	 <include name="**/*.wav" />
+       </fileset>
+     </copy>
+
+  </target>
+
+  <target name="compile" depends="init" description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} . Don't compile the dynamically loaded strategies. -->
+    <javac srcdir="${src}" destdir="${build}" excludes="de/andreas_rueckert/trade/bot/spread/strategies/java/**">
+      <classpath>
+	<fileset dir="${lib}">
+	  <include name="**/*.jar" />
+	</fileset>
+	<fileset dir="${cryptocoin-tradelib}">
+	  <include name="**/*.jar" />
+	</fileset>
+	<fileset dir="${cryptocoin-tradelib-ui-j2ee}">
+	  <include name="**/*.jar" />
+	</fileset>
+	<fileset dir="${botlib}">
+	  <include name="**/*.jar" />
+	</fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile" description="generate the distribution" >
+
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- copy the libs to the distribution for easier installation -->
+    <copy todir="${dist}/lib">
+      <fileset dir="${lib}">
+	<include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${cryptocoin-tradelib}">
+	<include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${cryptocoin-tradelib-ui-j2ee}">
+	<include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${botlib}">
+	<include name="**/*.jar" />
+      </fileset>
+    </copy>
+
+    <!-- Since the custom libs are optional, ignore them, if they are missing -->
+    <copy todir="${dist}/lib" failonerror="false">
+      <fileset dir="${cryptocoin-tradelib-custom}">
+	<include name="**/*.jar" />
+      </fileset>
+    </copy>
+
+
+    <!-- copy the startup scripts tp the distribution for easier usage -->
+    <copy todir="${dist}/lib">
+      <fileset dir="${scripts}">
+	<include name="**/*.sh" />
+      </fileset>
+    </copy>
+
+    <!-- copy the rule sets to the distribution for easier usage -->
+    <copy todir="${dist}/rules">
+      <fileset dir="${rules}">
+	<include name="**/*.drl" />
+      </fileset>
+    </copy>
+
+    <!-- copy the java strategies for dynamic loading to the distribution for easier usage -->
+    <copy todir="${dist}/strategies/java">
+      <fileset dir="src/de/andreas_rueckert/trade/bot/spread/strategies/java/">
+	<include name="**/*.java" />
+      </fileset>
+    </copy>
+
+    <!-- Define a path to the jars in the dist/lib directory -->
+    <path id="manifest.classpath">
+      <fileset dir="${dist}/lib">
+    	<include name="*.jar"/>
+      </fileset>
+    </path>
+
+    <!-- Convert the path to a manifest class path. -->
+    <manifestclasspath property="jar.classpath" jarfile="${dist}/lib/tradeapp-${version}.jar">
+      <classpath refid="manifest.classpath" />
+    </manifestclasspath>
+    
+    <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/tradeapp-${version}.jar" basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class" value="de.andreas_rueckert.trade.app.TradeApp"/>
+	<attribute name="Class-Path" value="${jar.classpath}"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+  <!-- Run the app with GUI -->
+  <target name="run" depends="dist">
+    <java jar="${dist}/lib/tradeapp-${version}.jar" maxmemory="2048m" fork="true">
+      <jvmarg value="-Xss16m"/>
+    </java>
+  </target>
+
+  <!-- Run the app with GUI but also activate the web UI for Yunga -->
+  <target name="runserver" depends="dist">
+    <java jar="${dist}/lib/tradeapp-${version}.jar" maxmemory="4096m" fork="true">
+      <arg value="-startserver"/>
+      <arg value="Yunga"/>
+    </java>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>

@@ -1,0 +1,21 @@
+tradesite BTCe;  // Make the btc-e API available.
+
+rule "Buy btc"
+     when
+	( ( oldcrossing_state != 1 )
+	  && ( BTCe.usd.balance() > 20)
+	  && ( BTCe.btc<=>usd.ema( 10d) > BTCe.btc<=>usd.ema( 21d)))
+     then
+	oldcrossing_state = 1;
+	BTCe.btc<=>usd.buy( BTCe.usd.balance())
+end
+
+rule "Sell btc"
+     when
+	( ( oldcrossing_state != -1)
+	  && ( BTCe.btc.balance > 0.2)  
+	  && ( BTCe.btc<=>usd.ema( 10d) < BTCe.btc<=>usd.ema( 21d)))
+     then
+        oldcrossing_state = -1;
+	BTCe.btc<=>usd.sell( BTCe.btc.balance())
+end

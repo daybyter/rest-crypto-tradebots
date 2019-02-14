@@ -1,0 +1,12 @@
+package MtGoxBitcoinRuleSet1
+
+global de.andreas_rueckert.chart.ChartProvider ChartProvider
+global de.andreas_rueckert.fee.FeeCalculator FeeCalculator
+global de.andreas_rueckert.trade.order.OrderBook OrderBook
+
+rule "Bitcoins at MtGox are over 5.20"
+when
+    eval( true )
+then 
+    System.out.println("Bitcoins at MtGox are over 5.20 USD");
+end

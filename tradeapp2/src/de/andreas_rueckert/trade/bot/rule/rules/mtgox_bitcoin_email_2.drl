@@ -1,0 +1,51 @@
+package MtGoxBitcoinRuleSet2
+
+global de.andreas_rueckert.chart.ChartProvider ChartProvider
+global de.andreas_rueckert.fee.FeeCalculator FeeCalculator
+global de.andreas_rueckert.trade.order.OrderBook OrderBook
+global de.andreas_rueckert.notification.EmailNotifier EmailNotifier
+global de.andreas_rueckert.trade.bot.ExecutionCounter ExecutionCounter
+
+// Declare a class for MtGox rates
+declare MtGoxRate
+	rate : long
+end
+
+
+rule "Init MtGox btc rate"
+    when
+	eval( ExecutionCounter.getCounter() == 0)
+    then
+	ExecutionCounter.increment();
+	insert( new MtGoxRate( ChartProvider.getSells().get("MtGox")));
+	System.out.println( "Inserting rate object with rate: " + ChartProvider.getSells().get("MtGox"));
+end
+
+rule "Offers at MtGox have risen over USD 6.20"
+    when
+	eval( ExecutionCounter.getCounter() > 0)
+	$currentRate : MtGoxRate( rate < (6.2 * 100000))
+        eval( ChartProvider.getSells().get("MtGox") > (6.2 * 100000))
+    then
+	ExecutionCounter.increment();
+	modify( $currentRate) { setRate( ChartProvider.getSells().get("MtGox")) };
+	EmailNotifier.sendMail( "mail@andreas-rueckert.de", "MtGox BTC sells", "BTC sell rate has risen over USD 6.20 .");
+end  
+
+rule "Offers at MtGox have dropped under USD 6.20"
+    when
+	eval( ExecutionCounter.getCounter() > 0)
+	$currentRate : MtGoxRate( rate > (6.2 * 100000))
+        eval( ChartProvider.getSells().get("MtGox") < (6.2 * 100000))
+    then
+	ExecutionCounter.increment();
+	modify( $currentRate) { setRate( ChartProvider.getSells().get("MtGox")) };
+	EmailNotifier.sendMail( "mail@andreas-rueckert.de", "MtGox BTC sells", "BTC sell rate has dropped under USD 6.20 .");
+end  
+
+rule "Default increment"
+     when
+	eval( true)
+     then
+	ExecutionCounter.increment();
+end

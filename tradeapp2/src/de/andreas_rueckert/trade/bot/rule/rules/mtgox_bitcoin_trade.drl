@@ -1,0 +1,12 @@
+package MtGoxBitcoinRuleSet2
+
+global de.andreas_rueckert.chart.ChartProvider ChartProvider
+global de.andreas_rueckert.fee.FeeCalculator FeeCalculator
+global de.andreas_rueckert.trade.order.OrderBook OrderBook
+
+rule "Bitcoins at MtGox have dropped by 20 US ct"
+    when
+        eval( ( ChartProvider.getSMA( 120 * 60 * 1000000).get("MtGox") - ChartProvider.getLast().get("MtGox")) > (0.2 * 100000))
+    then
+        System.out.println("Bitcoins at mtgox dropped by 20 US ct => buy?");
+end  

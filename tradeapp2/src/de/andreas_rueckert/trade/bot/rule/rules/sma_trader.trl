@@ -1,0 +1,6 @@
+rule "Compare btc-e sma"
+     when
+	( BTCe.btc<=>usd.ticker.buy * 110% > BTCe.btc<=>usd.sma(6h) ) && ( BTCe.btc.balance() > 1.0 )
+     then
+	BTCe.btc<=>usd.sell( BTCe.btc.balance() - 1.0)
+end
